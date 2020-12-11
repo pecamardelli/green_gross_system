@@ -1,9 +1,37 @@
-import React from 'react'
+import React from 'react';
+import icons from '../assets/icons';
+import logo from '../assets/images/logo.png';
 
 export default function AboutUs() {
-    return (
-        <div>
-            <h1>About Us Component!</h1>
+    return (<center>
+        <div className="card-transparent mb-3 text-white" style={{ maxWidth: '70%'}}>
+            <div className="row no-gutters">
+                <div className="col-md-4">
+                    <img
+                        src={logo}
+                        className="card-img"
+                        width="80%"
+                        style={{ margin: '10px 10px 10px 10px'}}
+                        alt=""
+                        loading="lazy"
+                    />
+                </div>
+                <div className="col-md-8">
+                    <div className="card-body">
+                        <h4 className="card-title">Green Gross System</h4>
+                        <p className="card-text">Vivamus dapibus, turpis convallis dapibus viverra, massa nunc auctor odio, eget varius turpis odio et massa.
+                            Phasellus sed dictum tortor. Aenean quis ex ex. Praesent sed risus et ligula consequat sollicitudin.
+                            In diam odio, sodales nec libero ut, posuere laoreet purus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+                        <div className="d-flex justify-content-between align-items-center">
+                            { icons.atIcon() }
+                            <h5>www.greengross.com</h5>
+                            { icons.mailIcon() }
+                            <h5>sales@greengross.com</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+        </center>
     )
 }

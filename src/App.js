@@ -19,7 +19,6 @@ function App() {
   useEffect(() => {
     const jsonData = localStorage.getItem('userData');
     if (jsonData) setUserData(JSON.parse(jsonData));
-    else setUserData({});
   }, [setUserData])
 
   return (

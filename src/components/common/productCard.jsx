@@ -36,9 +36,8 @@ function ProductCard({ data }) {
             }
 
             tempUserData.wishList = wishList;
-            console.log(tempUserData);
-            setUserData(tempUserData);
             localStorage.setItem('userData', JSON.stringify(tempUserData));
+            setUserData(tempUserData);
 
             toast.success(`Added ${quantity} products to cart.`);
         }

@@ -18,7 +18,8 @@ function UserMenu(props) {
             count += item.number;
         }
         return count;
-    }
+    };
+    
     return (
         <div className="user-menu text-white d-flex justify-content-between align-items-center">
             <div>Hello, {userData.username}!</div>
