@@ -5,7 +5,7 @@ import logo from '../../assets/images/logo.png';
 function NavBar(props) {
 	return (
 		<nav className="navbar navbar-expand-lg navbar-light bg-light-alpha">
-			<Link className="navbar-brand" to="/">
+			<Link className="navbar-brand" to="/home">
 				<img
 					src={logo}
 					className="d-inline-block align-top"
