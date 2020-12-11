@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import noImage from '../../assets/images/not_found.png';
 import logo from '../../assets/images/logo.png';
+import icons from '../../assets/icons';
+import { toast } from 'react-toastify';
+import UserContext from './../../context/userContext';
 
 function ProductCard({ data }) {
     const [quantity, setQuantity] = useState(1);
+    const {userData} = useContext(UserContext);
 
     const modifyQuantity = (action) => {
         if (action === "+") setQuantity(quantity+1);
         else if (quantity > 1) setQuantity(quantity-1);
+    }
+
+    const addToCart = () => {
+        if (userData && userData.userId)
+            toast.success(`Added ${quantity} products to cart.`);
+        else
+            toast.error(`Please, login first.`);
     }
 
     return (
@@ -34,7 +45,7 @@ function ProductCard({ data }) {
             <div className="card-footer text-white">
                 <div className="d-flex justify-content-between align-items-center h-25">
                     <div className="input-group">
-                        <div class="input-group-append">
+                        <div className="input-group-append">
                             <button
                                 className="btn btn-success btn-sm"
                                 type="button"
@@ -47,7 +58,7 @@ function ProductCard({ data }) {
                             value={quantity}
                             disabled
                         />
-                        <div class="input-group-append">
+                        <div className="input-group-append">
                             <button
                                 className="btn btn-success btn-sm"
                                 type="button"
@@ -56,7 +67,7 @@ function ProductCard({ data }) {
                         </div>
                     </div>
                     <div>
-                        Add
+                        <span onClick={addToCart}>{icons.addToCartIcon()}</span>
                     </div>
                 </div>
             </div>

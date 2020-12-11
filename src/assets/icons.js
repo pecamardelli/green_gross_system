@@ -1,6 +1,6 @@
 import React from 'react';
 
-const iconSize  = '1.5em';
+const iconSize  = '2em';
 
 const getLogoutIcon = (size = iconSize) => {
     return (<svg width={ size } height={ size } viewBox="0 0 16 16" className="bi bi-power" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
