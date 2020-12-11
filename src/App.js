@@ -11,10 +11,16 @@ import { ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 import UserContext from './context/userContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function App() {
   const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const jsonData = localStorage.getItem('userData');
+    if (jsonData) setUserData(JSON.parse(jsonData));
+    else setUserData({});
+  }, [setUserData])
 
   return (
     <UserContext.Provider value={{ userData, setUserData }}>

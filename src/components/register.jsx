@@ -1,10 +1,31 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { toast } from 'react-toastify';
+import UserContext from './../context/userContext';
 
-export default function Register() {
+export default function Register(props) {
+    const [ userFormData, setUserFormData ] = useState({});
+    const userContext = useContext(UserContext);
+
+    if (userContext.userData.username) props.history.push('/not-found');
 
     const handleSubmit = () => {
-        toast.success("Submitted...");
+        if (!userFormData.username ||
+            !userFormData.email ||
+            !userFormData.password) {
+            toast.error("All fields are required.");
+            return;
+        }
+
+        userContext.setUserData(userFormData);
+        localStorage.setItem('userData', JSON.stringify(userFormData));
+        props.history.push('/home');
+    }
+
+    const handleChange = (e) => {
+        //console.log(e.target);
+        const aux = { ...userFormData };
+        aux[e.target.id] = e.target.value;
+        setUserFormData(aux);
     }
 
     return (<center>
@@ -21,19 +42,44 @@ export default function Register() {
                 <div className="card-body">
                     <form>
                         <div className="form-group row">
-                            <label for="inputEmail3" className="col-sm-2 col-form-label">Email</label>
+                            <label htmlFor="username" className="col-sm-2 col-form-label">Username</label>
                             <div className="col-sm-10 mb-auto">
-                                <input type="email" className="form-control" id="inputEmail3"/>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="username"
+                                    onChange={handleChange}
+                                />
                             </div>
                         </div>
                         <div className="form-group row">
-                            <label for="inputPassword3" className="col-sm-2 col-form-label">Password</label>
+                            <label htmlFor="email" className="col-sm-2 col-form-label">Email</label>
+                            <div className="col-sm-10 mb-auto">
+                                <input
+                                    type="email"
+                                    className="form-control"
+                                    id="email"
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        </div>
+                        <div className="form-group row">
+                            <label htmlFor="password" className="col-sm-2 col-form-label">Password</label>
                             <div className="col-sm-10">
-                                <input type="password" className="form-control" id="inputPassword3"/>
+                                <input
+                                    type="password"
+                                    className="form-control"
+                                    id="password"
+                                    onChange={handleChange}
+                                />
                             </div>
                         </div>
                         <div className="form-group">
-                            <button type="submit" className="btn btn-success">Sign in</button>
+                            <button
+                                type="button"
+                                className="btn btn-success"
+                                onClick={handleSubmit}
+                            >Sign in</button>
                         </div>
                     </form>
                 </div>

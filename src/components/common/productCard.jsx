@@ -8,7 +8,7 @@ import UserContext from './../../context/userContext';
 
 function ProductCard({ data }) {
     const [quantity, setQuantity] = useState(1);
-    const {userData} = useContext(UserContext);
+    const {userData, setUserData} = useContext(UserContext);
 
     const modifyQuantity = (action) => {
         if (action === "+") setQuantity(quantity+1);
@@ -16,10 +16,33 @@ function ProductCard({ data }) {
     }
 
     const addToCart = () => {
-        if (userData && userData.userId)
+        if (userData.username) {
+            const tempUserData = userData;
+
+            let wishList = userData.wishList;
+            if (!wishList) wishList = [];
+
+            const item = wishList.find(i => i.id === data.id);
+            if (!item) {
+                const newItem = {
+                    id: data.id,
+                    number: quantity
+                };
+                wishList.push(newItem);
+            }
+            else {
+                const index = wishList.indexOf(item);
+                wishList[index].number += quantity;
+            }
+
+            tempUserData.wishList = wishList;
+            console.log(tempUserData);
+            setUserData(tempUserData);
+            localStorage.setItem('userData', JSON.stringify(tempUserData));
+
             toast.success(`Added ${quantity} products to cart.`);
-        else
-            toast.error(`Please, login first.`);
+        }
+        else toast.error(`Please, register first.`);
     }
 
     return (
