@@ -1,17 +1,18 @@
 import './App.css';
+import { useState, useEffect } from 'react';
+import { ToastContainer } from 'react-toastify';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import NavBar from './components/common/navBar';
 import Footer from './components/common/footer';
-import { Redirect, Route, Switch } from 'react-router-dom';
 import Register from './components/register';
 import Home from './components/home';
 import AboutUs from './components/aboutUs';
 import ContactUs from './components/contactUs';
 import NotFound from './components/common/notFound';
-import { ToastContainer } from 'react-toastify';
+import WishList from './components/wishList';
+import UserContext from './context/userContext';
 
 import 'react-toastify/dist/ReactToastify.css';
-import UserContext from './context/userContext';
-import { useState, useEffect } from 'react';
 
 function App() {
   const [userData, setUserData] = useState({});
@@ -30,6 +31,7 @@ function App() {
           <Route path="/register"   exact component={Register} />
           <Route path="/about-us"   exact component={AboutUs} />
           <Route path="/contact-us" exact component={ContactUs} />
+          <Route path="/wishlist"   exact component={WishList} />
           <Route path='/not-found'	exact component={NotFound} />
           <Route path='/home'       exact component={Home} />
           <Redirect from="/" to='/home' />

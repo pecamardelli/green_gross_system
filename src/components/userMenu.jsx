@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import icons from '../assets/icons';
 import UserContext from './../context/userContext';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
 function UserMenu(props) {
     const {userData, setUserData} = useContext(UserContext);
@@ -24,7 +25,11 @@ function UserMenu(props) {
         <div className="user-menu text-white d-flex justify-content-between align-items-center">
             <div>Hello, {userData.username}!</div>
             &nbsp;
-            <div>{icons.cartIcon('1.4em')}</div>
+            <div>
+                <Link to='/wishlist'>
+                    {icons.cartIcon('1.4em')}
+                </Link>
+            </div>
             &nbsp;
             <div className="badge badge-success badge-pill">
                 { userData.wishList ? getItemCount() : 0 }
