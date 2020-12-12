@@ -1,26 +1,30 @@
-import React from "react";
-import { Map as LeafletMap, Marker, Popup, TileLayer } from "react-leaflet";
+import React, { useEffect } from 'react';
 
-// GET ONE in https://docs.mapbox.com/help/how-mapbox-works/access-tokens/";
-const ACCESS_TOKEN = "Aj6-7A0g8ZfYerfMQLQVFt3DvU--RyMpDC8u1g2KV_CFP4plypNxDSWei9wbEpbK";
+function BingMaps(props) {
+  const apiKey = "Aj6-7A0g8ZfYerfMQLQVFt3DvU--RyMpDC8u1g2KV_CFP4plypNxDSWei9wbEpbK";
+  
+  useEffect(() => {
+    const load = setInterval(() => {
+      if (window.Microsoft) {
+        new window.Microsoft.Maps.Map('#myMap', {
+        credentials: apiKey,
+        center: new window.Microsoft.Maps.Location(51.50632, -0.12714),
+        mapTypeId: window.Microsoft.Maps.MapTypeId.aerial,
+            zoom: 10
+        });
+      }
+      if (window.Microsoft) window.clearInterval(load);
+    }, 1000);
+    
+  });
 
-const URL = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`;
-const ATTRIBUTION =
-  'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+  return (
+    <div className="card-transparent bing-maps">
+      <div className="card-body">
+        <div id="myMap"></div>
+      </div>
+    </div>
+  );
+}
 
-const TOWER_LOCATION = [43.385807, -8.406524];
-
-const MyMap = () => (
-  <LeafletMap center={TOWER_LOCATION} zoom={16}>
-    <TileLayer url={URL} attribution={ATTRIBUTION} />
-    <Marker position={TOWER_LOCATION}>
-      <Popup>
-        <b>Tower of Hercules</b>
-        <br />
-        UNESCO World Heritage site
-      </Popup>
-    </Marker>
-  </LeafletMap>
-);
-
-export default MyMap;
+export default BingMaps;
