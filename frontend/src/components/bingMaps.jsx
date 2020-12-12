@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import httpService from '../../src/services/httpService';
 
 function BingMaps(props) {
   const apiKey = "Aj6-7A0g8ZfYerfMQLQVFt3DvU--RyMpDC8u1g2KV_CFP4plypNxDSWei9wbEpbK";
@@ -13,6 +14,10 @@ function BingMaps(props) {
         mapTypeId: window.Microsoft.Maps.MapTypeId.aerial,
             zoom: 15
         });
+
+        httpService.getLocations()
+        .then(response => response.json())
+        .then(data => console.log(data));
 
         const center = map.getCenter();
 

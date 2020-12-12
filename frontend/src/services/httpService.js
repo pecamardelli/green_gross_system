@@ -1,5 +1,5 @@
 
-const apiUrl = 'http://localhost:3001/api?act=';
+const apiUrl = 'http://localhost:3001/api';
 const options = { mode: 'cors'};
 
 const content = [
@@ -65,9 +65,14 @@ const content = [
 	}
 ];
 
-function getAll() {
-	//return fetch(`${apiUrl}getall`, options);
-	return content;
+function getLocations() {
+	return fetch(`${apiUrl}/locations?act=getall`, options);
+	//return content;
+}
+
+function getProducts() {
+	return fetch(`${apiUrl}/products?act=getall`, options);
+	//return content;
 }
 
 function update(url) {
@@ -82,4 +87,4 @@ function del(url) {
 	return fetch(`${apiUrl}delete&${url}`, options);
 }
 
-export default { getAll, update, add, del };
+export default { getProducts, getLocations, update, add, del };

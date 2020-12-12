@@ -5,7 +5,7 @@ function CardDeck(props) {
     return (
         <div className='container'>
             <div className={`row row-cols-1 row-cols-md-${props.cols}`}>
-                { props.cards.map(item => 
+                { props.cards?.map(item => 
                     <div className={`col mb-${props.cols}`} key={item.id}>
                         <CardComponent data={item} />
                     </div>)

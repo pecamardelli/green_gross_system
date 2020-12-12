@@ -8,7 +8,10 @@ export default function Home() {
     const [ content, setContent] = useState([]);
 
     useEffect(() => {
-        setContent(httpService.getAll());
+        //setContent(httpService.getProducts());
+        httpService.getProducts()
+            .then(response => response.json())
+            .then(data => setContent(data));
     }, [setContent]);
 
     return (<>
