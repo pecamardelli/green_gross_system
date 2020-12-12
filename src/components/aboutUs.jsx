@@ -23,9 +23,9 @@ export default function AboutUs() {
                             Phasellus sed dictum tortor. Aenean quis ex ex. Praesent sed risus et ligula consequat sollicitudin.
                             In diam odio, sodales nec libero ut, posuere laoreet purus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
                         <div className="d-flex justify-content-between align-items-center">
-                            { icons.atIcon() }
+                            { icons.atIcon('1.6em') }
                             <h5>www.greengross.com</h5>
-                            { icons.mailIcon() }
+                            { icons.mailIcon('1.5em') }
                             <h5>sales@greengross.com</h5>
                         </div>
                     </div>

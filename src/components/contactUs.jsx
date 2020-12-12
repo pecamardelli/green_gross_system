@@ -5,15 +5,17 @@ export default function ContactUs() {
     const msgRef = useRef();
 
     const handleSubmit = () => {
+        const msg = msgRef.current.value;
+        if (msg) toast.success("Message successfully sent!");
+        else return toast.error("Please, write a message.");
         msgRef.current.value = "";
-        toast.success("Message successfully sent!");
     };
 
     return (<center>
         <div className="register-form text-white">
             <div className="card-transparent">
                 <div className="card-body">
-                    <h3>Contact us and we will respond as soon as posible!</h3>
+                    <h3>Contact us and we will respond as soon as possible!</h3>
                 </div>
             </div>
             <br />

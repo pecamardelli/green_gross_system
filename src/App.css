@@ -51,6 +51,15 @@ body {
   background-size: cover;
 }
 
+.table>tbody>tr>td, 
+.table>tbody>tr>th, 
+.table>tfoot>tr>td, 
+.table>tfoot>tr>th, 
+.table>thead>tr>td, 
+.table>thead>tr>th {
+    vertical-align: middle;
+}
+
 .four-o-four {
   font-size: 15ch;
   color: #96e73a;
@@ -78,7 +87,7 @@ main {
 }
 
 .product-quantity {
-  max-width: 30px;
+  max-width: 40px;
 }
 
 .register-form {

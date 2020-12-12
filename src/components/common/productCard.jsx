@@ -17,7 +17,7 @@ function ProductCard({ data }) {
 
     const addToCart = () => {
         if (userData.username) {
-            const tempUserData = userData;
+            const tempUserData = JSON.parse(JSON.stringify(userData));
 
             let wishList = userData.wishList;
             if (!wishList) wishList = [];
@@ -25,7 +25,7 @@ function ProductCard({ data }) {
             const item = wishList.find(i => i.id === data.id);
             if (!item) {
                 const newItem = {
-                    id: data.id,
+                    ...data,
                     number: quantity
                 };
                 wishList.push(newItem);
