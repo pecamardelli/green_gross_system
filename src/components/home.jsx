@@ -8,13 +8,15 @@ export default function Home() {
 
     useEffect(() => {
         setContent(httpService.getAll());
-    });
+    }, [setContent]);
 
-    return (
-        <CardDeck
-            cards={ content }
-            cardComponent={ ProductCard } 
-            cols={5}
-        />
+    return (<>
+            <CardDeck
+                cards={ content }
+                cardComponent={ ProductCard } 
+                cols={5}
+            />
+            <div id="myMap"></div>
+        </>
     )
 }
