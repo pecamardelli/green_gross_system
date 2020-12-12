@@ -5,53 +5,63 @@ const options = { mode: 'cors'};
 const content = [
 	{
 		id: 1,
-		displayName: 'Vegetable1',
+		displayName: 'Broccoli',
+		imageFile: 'broccoli.png',
 		price: 0.99
 	},
 	{
 		id: 2,
-		displayName: 'Vegetable2',
-		price: 0.99
+		displayName: 'Onion',
+		imageFile: 'onion.png',
+		price: 1.29
 	},
 	{
 		id: 3,
-		displayName: 'Vegetable3',
-		price: 0.99
+		displayName: 'Carrot',
+		imageFile: 'carrot.png',
+		price: 0.79
 	},
 	{
 		id: 4,
-		displayName: 'Vegetable4',
-		price: 0.99
+		displayName: 'Potato',
+		imageFile: 'potato.png',
+		price: 0.89
 	},
 	{
 		id: 5,
-		displayName: 'Vegetable5',
-		price: 0.99
+		displayName: 'Tomato',
+		imageFile: 'tomato.png',
+		price: 1.39
 	},
 	{
 		id: 6,
-		displayName: 'Fruit1',
+		displayName: 'Apples',
+		imageFile: 'apples.png',
 		price: 0.99
 	},
 	{
 		id: 7,
-		displayName: 'Fruit2',
-		price: 0.99
+		displayName: 'Oranges',
+		imageFile: 'oranges.png',
+		price: 1.19
 	},
 	{
 		id: 8,
-		displayName: 'Fruit3',
-		price: 0.99
+		displayName: 'Bananas',
+		imageFile: 'bananas.png',
+		price: 0.79
 	},
 	{
 		id: 9,
-		displayName: 'Fruit4',
-		price: 0.99
+		displayName: 'Berries',
+		imageFile: 'berries.png',
+		price: 2.99
 	},
 	{
 		id: 10,
-		displayName: 'Fruit5',
-		price: 0.99
+		displayName: 'Watermelon',
+		imageFile: 'watermelon.png',
+		price: 1.89
 	}
 ];
 

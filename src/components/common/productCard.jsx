@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
 import noImage from '../../assets/images/not_found.png';
-import logo from '../../assets/images/logo.png';
+//import logo from '../../assets/images/logo.png';
 import icons from '../../assets/icons';
 import { toast } from 'react-toastify';
 import UserContext from './../../context/userContext';
@@ -46,14 +45,18 @@ function ProductCard({ data }) {
 
     return (
         <div className="card-transparent border-dark mb-4">
-            <Link to="/home">
-                <img
-                    src={ logo }
-                    onError={(e) => {e.target.onerror = null; e.target.src=noImage}}
-                    className="card-img-top"
-                    alt="Display Name"
-                />
-            </Link>
+            <img
+                src={`images/${data.imageFile}`}
+                onError={(e) => {
+                    e.target.onerror = null;
+                    // This conditional prevents an infinite fallback loop
+                    // when noImage is not available or undefined
+                    if(noImage) e.target.src=noImage;
+                    else e.target.src=''
+                }}
+                className="card-img-top"
+                alt={data.displayName}
+            />
             <div className="card-body">
                 <div className="card-title h-40 text-white">
                     <h5>

@@ -18,7 +18,7 @@ function WishList(props) {
 
     const getSaleTotal = () => {
         if (!userData.wishList) return 0;
-        
+
         let total = 0;
         for (let item of userData.wishList) {
             total += item.price * item.number;
@@ -63,7 +63,7 @@ function WishList(props) {
                                 <td style={{ width: '7%' }}>
                                     <img
                                         className="card-img"
-                                        src={`../assets/images/${item.imageFile}`}
+                                        src={`images/${item.imageFile}`}
                                         onError={(e) => {
                                             e.target.onerror = null;
                                             // This conditional prevents an infinite fallback loop
