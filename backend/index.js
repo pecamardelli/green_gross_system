@@ -24,7 +24,9 @@ db.serialize(function(){
 
   // insert initial records into locations table
   var stmt = db.prepare("INSERT INTO Locations VALUES (?,?,?)");
-  stmt.run("43.254406", "-79.867308", "22 King St W, Hamilton, ON. Postal Code: L8P 1A1");
+  stmt.run("43.254406", "-79.867308", "Green Gross Main Center");
+  stmt.run("43.257992", "-79.869754", "Nations Fresh Food");
+  stmt.run("43.234586", "-79.877792", "Walmart Supercentre");
   stmt.finalize();
 
    // create a fresh version of the locations table
