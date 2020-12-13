@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import noImage from '../../assets/images/not_found.png';
 //import logo from '../../assets/images/logo.png';
-import icons from '../../assets/icons';
+import { getAddToCartIcon } from '../../assets/icons';
 import { toast } from 'react-toastify';
 import UserContext from './../../context/userContext';
 
@@ -92,7 +92,7 @@ function ProductCard({ data }) {
                         </div>
                     </div>
                     <div>
-                        <span onClick={addToCart}>{icons.addToCartIcon()}</span>
+                        <span onClick={addToCart}>{getAddToCartIcon()}</span>
                     </div>
                 </div>
             </div>

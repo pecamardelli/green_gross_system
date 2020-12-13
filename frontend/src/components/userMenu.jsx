@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import icons from '../assets/icons';
+import { getCartIcon, getLogoutIcon } from '../assets/icons';
 import UserContext from './../context/userContext';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -27,7 +27,7 @@ function UserMenu(props) {
             &nbsp;
             <div>
                 <Link to='/wishlist'>
-                    {icons.cartIcon('1.4em')}
+                    {getCartIcon('1.4em')}
                 </Link>
             </div>
             &nbsp;
@@ -35,7 +35,7 @@ function UserMenu(props) {
                 { userData.wishList ? getItemCount() : 0 }
             </div>
             &nbsp;
-            <div onClick={handleLogout} >{icons.logoutIcon('1.4em')}</div>
+            <div onClick={handleLogout} >{getLogoutIcon('1.4em')}</div>
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import httpService from '../services/httpService';
+import { getProducts } from '../services/httpService';
 import BingMaps from './bingMaps';
 import CardDeck from './common/cardDeck';
 import ProductCard from './common/productCard';
@@ -9,7 +9,7 @@ export default function Home() {
 
     useEffect(() => {
         //setContent(httpService.getProducts());
-        httpService.getProducts()
+        getProducts()
             .then(response => response.json())
             .then(data => setContent(data));
     }, [setContent]);

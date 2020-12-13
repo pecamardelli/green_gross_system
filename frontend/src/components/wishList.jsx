@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import UserContext from './../context/userContext';
 import noImage from '../assets/images/not_found.png';
-import icons from '../assets/icons';
+import { getTrashIcon, getBuyedIcon } from '../assets/icons';
 import { toast } from 'react-toastify';
 
 function WishList(props) {
@@ -39,7 +39,7 @@ function WishList(props) {
     };
 
     return (
-        <div className="card-transparent">
+        <div className="card-transparent wish-list">
             <div className="card-body">
                 <div className="card-title h-40 text-white">
                     <h5>
@@ -95,7 +95,7 @@ function WishList(props) {
                                     </h6>
                                 </td>
                                 <td>
-                                    <span onClick={() => handleDelete(item.id)}>{ icons.trashIcon() }</span>
+                                    <span onClick={() => handleDelete(item.id)}>{ getTrashIcon() }</span>
                                 </td>
                             </tr>
                         )}
@@ -108,7 +108,7 @@ function WishList(props) {
                                 <h5><strong>${getSaleTotal()}</strong></h5>
                             </td>
                             <td>
-                                <span onClick={handleCheckout}>{icons.buyedIcon()}</span>
+                                <span onClick={handleCheckout}>{getBuyedIcon()}</span>
                             </td>
                         </tr>
                     </tbody>
