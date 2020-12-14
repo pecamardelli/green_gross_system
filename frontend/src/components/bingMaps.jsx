@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { getLocations } from '../../src/services/httpService';
+import { getCoords } from '../services/bingMapsService';
+import UserContext from './../context/userContext';
 
 function BingMaps(props) {
   const [locations, setLocations] = useState([]);
+  const {userData, setUserData} = useContext(UserContext);
+  const address = useRef();
   const apiKey = "Aj6-7A0g8ZfYerfMQLQVFt3DvU--RyMpDC8u1g2KV_CFP4plypNxDSWei9wbEpbK";
   const mainAddress = "2 King St W, Hamilton, ON. Postal Code: L8P 1A1";
   let map;
+  let searchManager;
 
   let load = setInterval(async () => {
     if (window.Microsoft) {
@@ -28,6 +33,7 @@ function BingMaps(props) {
         //Add the pushpin to the map
         map.entities.push(pin);
       }
+      window.Microsoft.Maps.loadModule('Microsoft.Maps.Search');
       window.clearInterval(load);
     }
   }, 1000);
@@ -42,13 +48,25 @@ function BingMaps(props) {
     call();
   }, [setLocations]);
 
+  const setAddress = async () => {
+    const coords = await getCoords(address.current.value, map);
+    console.log(coords);
+
+  };
+
   return (
     <div className="card-transparent bing-maps text-white">
       <div className="card-body row">
-        <div className="col-sm-6" id="myMap"></div>
-        <div className="col-sm-6">
-          <h4>Please, enter your address.</h4>
-          <input className="form-control" type="text" placeholder={mainAddress}/>
+        <div className="col-sm-7" id="myMap"></div>
+        <div className="col-sm-5">
+          <h5>Please, enter your address.</h5>
+          <div className="d-flex justify-content-between align-items-center">
+            <input ref={address} className="form-control" type="text" placeholder={mainAddress}/>
+            <button
+              className="btn btn-success"
+              onClick={setAddress}
+            >Set</button>
+          </div>
         </div>
       </div>
     </div>
