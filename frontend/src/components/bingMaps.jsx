@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { addLocation, getLocations, deleteLocation } from '../services/httpService';
+import { getLocations } from '../services/httpService';
 import { geocodeQuery, getDistance } from '../services/bingMapsService';
 import UserContext from './../context/userContext';
 
@@ -26,7 +26,20 @@ function BingMaps(props) {
   
         //Add the pushpin to the map
         map.entities.push(pin);
-        if (loc.description === "You are here") map.setView({ bounds: pin.bestView });
+      }
+
+      // Now, add the user location to the map, if it is defined
+      if (userData.pushpin) {
+        const userPin = userData.pushpin;
+        const coords = new window.Microsoft.Maps.Location(userPin.latitude, userPin.longitude);
+        const pin = new window.Microsoft.Maps.Pushpin(coords, {
+            title: userPin.description,
+            subTitle: userPin.subtitle,
+            text: userPin.id
+        });
+  
+        //Add the pushpin to the map
+        map.entities.push(pin);
       }
     }
   };
@@ -40,7 +53,6 @@ function BingMaps(props) {
         center = new window.Microsoft.Maps.Location(userData.pushpin.latitude, userData.pushpin.longitude);
       else
         center = new window.Microsoft.Maps.Location(43.254406, -79.867308);
-
       
       map = await new window.Microsoft.Maps.Map('#myMap', {
         credentials: apiKey,
@@ -64,42 +76,40 @@ function BingMaps(props) {
     call();
   }, [setLocations]);
 
-  const getNearestLocation = (_locations) => {
-    getDistance(apiKey, _locations);
+  const getNearestLocation = (pushpin) => {
+    getDistance(apiKey, pushpin, locations);
 
     let calculateDistances = setInterval(() => {
       if (window.locationsWithDistance) {
         window.clearInterval(calculateDistances);
         const nearest = window.locationsWithDistance.reduce(function(res, loc) {
-          return (loc.distance < res.distance) ? loc : res;
+          return (loc.travelDistance < res.travelDistance) ? loc : res;
         });
 
         for (let loc of window.locationsWithDistance) {
-          if (loc.distance === nearest.distance) loc.nearest = true;
+          if (loc.travelDistance === nearest.travelDistance) loc.nearest = true;
           else loc.nearest = false;
         }
+
+        const _userData = { ...userData, pushpin };
+        localStorage.setItem('userData', JSON.stringify(_userData));
+        setUserData(_userData);
 
         setLocations(window.locationsWithDistance);
         pushPins();
       }
-    }, 100);
+    }, 1000);
   };
 
   const setAddress = async () => {
     if (!address.current.value) return;
-
     geocodeQuery(address.current.value, map);
     
     let getNewLocation = setInterval(async function() {
       if (window.newLocation) {
         window.clearInterval(getNewLocation);
 
-        if (userData.pushpin) {
-          await deleteLocation(userData.pushpin.id);
-        }
-
         const loc = window.newLocation;
-
         const myPushPin = {
           id: Math.round(Math.random() * 1000),
           latitude: loc.latitude,
@@ -107,21 +117,11 @@ function BingMaps(props) {
           description: "You are here",
           subtitle: "My location",
           address: address.current.value
-        };        
+        };
         
-        const uriEncoded = new URLSearchParams(myPushPin);
-        await addLocation(uriEncoded.toString());
-        
-        const _userData = JSON.parse(JSON.stringify(userData));
-        _userData.pushpin = myPushPin;
-        localStorage.setItem('userData', JSON.stringify(_userData));
-        setUserData(_userData);
-
-        const _locations = locations.filter(loc => loc.description !== "You are here");
-        _locations.push(myPushPin);
-        getNearestLocation(_locations);
+        getNearestLocation(myPushPin);
       }
-    }, 100);
+    }, 1000);
   };
 
   return (
@@ -141,11 +141,17 @@ function BingMaps(props) {
             { locations.map(loc => {
               if (loc.nearest) {
                 return (<div>
-                    <h5>The nearest pickup location to you is:</h5>
+                    <h4>
+                      <strong>Your address:</strong>
+                    </h4>
+                    <h5>{userData.pushpin.address}</h5>
+                    <h5>
+                      <strong>The nearest pickup location to you is:</strong>
+                    </h5>
                     <h5>{loc.description}</h5>
                     <small>{loc.address}</small>
                     <br />
-                    <small>Distance {loc.distance} km</small>
+                    <small>Distance {loc.travelDistance} km</small>
                   </div>);
               }
               return null;

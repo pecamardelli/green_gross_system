@@ -75,7 +75,7 @@ app.get("/api/locations", function(req,res) {
 	}
 
 	else if (req.query.act == "add") {
-		db.run("INSERT INTO Locations(id,latitude,longitude,description,subtitle,address) VALUES (?,?,?,?,?)", 
+		db.run("INSERT INTO Locations(id,latitude,longitude,description,subtitle,address) VALUES (?,?,?,?,?,?)", 
 			[req.query.id, 
 			req.query.latitude,
 			req.query.longitude, 
