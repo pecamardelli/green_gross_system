@@ -1,5 +1,7 @@
 
 export async function geocodeQuery(query, map) {
+    if (!map) return console.log("Map is null.");
+
     const searchManager = await new window.Microsoft.Maps.Search.SearchManager(map);
 
     const searchRequest = {
@@ -26,18 +28,18 @@ export async function geocodeQuery(query, map) {
     };
 
     //Make the geocode request.
-    return searchManager.geocode(searchRequest);
+    searchManager.geocode(searchRequest);
 }
 
-export function getDistance(apiKey, locations) {
+export function getDistance(apiKey, myLocation, locations) {
     const requestUrl = 'https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix?key=' + apiKey;
 
-    const origins = locations
-        .filter(loc => loc.description === 'You are here')
-        .map(l => ({ latitude: l.latitude, longitude: l.longitude }));
+    const origins = [{
+       latitude: myLocation.latitude,
+       longitude: myLocation.longitude 
+    }];
 
     const destinations = locations
-        .filter(loc => loc.description !== 'You are here')
         .map(l => ({ latitude: l.latitude, longitude: l.longitude }));
  
     const requestBody = {
@@ -70,15 +72,11 @@ export function getDistance(apiKey, locations) {
                 //result.resourceSets[0].resources[0].results
             });
             */
-            window.locationsWithDistance = locations.map(loc => {
-                const index = destinations.findIndex(i =>
-                    i.latitude === loc.latitude && i.longitude === loc.longitude
-                );
-
-                if (index >= 0) loc.distance = result.resourceSets[0].resources[0].results[index].travelDistance;
+            window.locationsWithDistance = locations.map((loc, index) => {
+                loc.travelDistance = result.resourceSets[0].resources[0].results[index].travelDistance;
+                loc.travelDuration = result.resourceSets[0].resources[0].results[index].travelDuration;
                 return loc;
             });
-
             //console.log(result.resourceSets[0].resources[0].results);
         }
     }
