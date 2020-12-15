@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { addLocation, getLocations, deleteLocation } from '../services/httpService';
-import { geocodeQuery } from '../services/bingMapsService';
+import { geocodeQuery, getDistance } from '../services/bingMapsService';
 import UserContext from './../context/userContext';
 
 function BingMaps(props) {
@@ -64,6 +64,26 @@ function BingMaps(props) {
     call();
   }, [setLocations]);
 
+  const getNearestLocation = (_locations) => {
+    getDistance(apiKey, _locations);
+
+    let call = setInterval(() => {
+      if (window.locationsWithDistance) {
+        window.clearInterval(call);
+        const nearest = window.locationsWithDistance.reduce(function(res, loc) {
+          return (loc.distance < res.distance) ? loc : res;
+        });
+
+        for (let loc of window.locationsWithDistance) {
+          if (loc.distance === nearest.distance) loc.nearest = true;
+        }
+
+        setLocations(window.locationsWithDistance);
+        pushPins();
+      }
+    }, 100);
+  };
+
   const setAddress = async () => {
     if (!address.current.value) return;
 
@@ -94,8 +114,7 @@ function BingMaps(props) {
 
         const _locations = locations.filter(loc => loc.description !== "You are here");
         _locations.push(myPushPin);
-        setLocations(_locations);
-        pushPins();
+        getNearestLocation(_locations);
       }
     }, 100);
   };
@@ -113,6 +132,16 @@ function BingMaps(props) {
               onClick={setAddress}
             >Set</button>
           </div>
+            <hr />
+            { locations.map(loc => {
+              if (loc.nearest) {
+                return (<div>
+                    <h5>The nearest location to you is:</h5>
+                    <h5>{loc.description}</h5>
+                  </div>);
+              }
+              return null;
+            })}
         </div>
       </div>
     </div>
