@@ -20,15 +20,17 @@ app.use(cors({origin: '*'}));
 db.serialize(function(){
   // create a fresh version of the locations table
   db.run("DROP TABLE IF EXISTS Locations");
-  db.run("CREATE TABLE Locations (id INTEGER, latitude REAL, longitude REAL, description TEXT, subtitle TEXT)");
+  db.run("CREATE TABLE Locations (id INTEGER, latitude REAL, longitude REAL, description TEXT, subtitle TEXT, address TEXT)");
 
   // insert initial records into locations table
-  var stmt = db.prepare("INSERT INTO Locations VALUES (?,?,?,?,?)");
-  stmt.run("1", "43.254406", "-79.867308", "Green Gross Main Center", "Main Branch");
-  stmt.run("2", "43.257992", "-79.869754", "Nations Fresh Food", "Healty Food");
-  stmt.run("3", "43.234586", "-79.877792", "Walmart Supercentre", "Supermarket");
+  var stmt = db.prepare("INSERT INTO Locations VALUES (?,?,?,?,?,?)");
+  stmt.run("1", "43.254406", "-79.867308", "Green Gross Main Center", "Main Branch", "2 King St W, Hamilton, ON. Postal Code: L8P 1A1");
+  stmt.run("2", "43.257992", "-79.869754", "Nations Fresh Food", "Healty Food", "2 King St W #445, Hamilton, ON Postal Code: L8P 1A2");
+  stmt.run("3", "43.234586", "-79.877792", "Walmart Supercentre", "Supermarket", "675 Upper James St, Hamilton, ON Postal Code: L9C 2Z5");
+  stmt.run("4", "43.251538", "-79,852623", "Giorgio's NoFrills", "Tasty Meals", "435 Main St E, Hamilton, ON Postal Code: L8N 1K1");
+  stmt.run("4", "43.253736", "-79.860992", "Green Foods", "Restaurant", "284 King St E, Hamilton, Ontario L8N 1B7, Canada");
   stmt.finalize();
-
+  
    // create a fresh version of the locations table
    db.run("DROP TABLE IF EXISTS Products");
    db.run("CREATE TABLE Products (id INTEGER, displayName TEXT, imageFile TEXT, price REAL)");
@@ -55,7 +57,7 @@ app.get("/api/locations", function(req,res) {
 	
 	// return all of the animals in the inventory as a JSON array
 	if (req.query.act == "getall") {
-  	  db.all("SELECT id, latitude, longitude, description, subtitle FROM Locations",
+  	  db.all("SELECT id, latitude, longitude, description, subtitle, address FROM Locations",
 		function(err, results) {
 			if (err) {
 				// console log error, return JSON error message
@@ -73,12 +75,14 @@ app.get("/api/locations", function(req,res) {
 	}
 
 	else if (req.query.act == "add") {
-		db.run("INSERT INTO Locations(id,latitude,longitude,description,subtitle) VALUES (?,?,?,?,?)", 
+		db.run("INSERT INTO Locations(id,latitude,longitude,description,subtitle,address) VALUES (?,?,?,?,?)", 
 			[req.query.id, 
 			req.query.latitude,
 			req.query.longitude, 
 			req.query.description,
-			req.query.subtitle],
+			req.query.subtitle,
+			req.query.address
+		],
 			function(err, results) {
 				if (err) {
 					// console log error, return JSON error message

@@ -67,15 +67,16 @@ function BingMaps(props) {
   const getNearestLocation = (_locations) => {
     getDistance(apiKey, _locations);
 
-    let call = setInterval(() => {
+    let calculateDistances = setInterval(() => {
       if (window.locationsWithDistance) {
-        window.clearInterval(call);
+        window.clearInterval(calculateDistances);
         const nearest = window.locationsWithDistance.reduce(function(res, loc) {
           return (loc.distance < res.distance) ? loc : res;
         });
 
         for (let loc of window.locationsWithDistance) {
           if (loc.distance === nearest.distance) loc.nearest = true;
+          else loc.nearest = false;
         }
 
         setLocations(window.locationsWithDistance);
@@ -89,11 +90,14 @@ function BingMaps(props) {
 
     geocodeQuery(address.current.value, map);
     
-    let getPin = setInterval(async function() {
+    let getNewLocation = setInterval(async function() {
       if (window.newLocation) {
-        window.clearInterval(getPin);
+        window.clearInterval(getNewLocation);
 
-        if (userData.pushpin) await deleteLocation(userData.pushpin.id);
+        if (userData.pushpin) {
+          await deleteLocation(userData.pushpin.id);
+        }
+
         const loc = window.newLocation;
 
         const myPushPin = {
@@ -101,7 +105,8 @@ function BingMaps(props) {
           latitude: loc.latitude,
           longitude: loc.longitude,
           description: "You are here",
-          subtitle: address.current.value
+          subtitle: "My location",
+          address: address.current.value
         };        
         
         const uriEncoded = new URLSearchParams(myPushPin);
@@ -136,8 +141,11 @@ function BingMaps(props) {
             { locations.map(loc => {
               if (loc.nearest) {
                 return (<div>
-                    <h5>The nearest location to you is:</h5>
+                    <h5>The nearest pickup location to you is:</h5>
                     <h5>{loc.description}</h5>
+                    <small>{loc.address}</small>
+                    <br />
+                    <small>Distance {loc.distance} km</small>
                   </div>);
               }
               return null;
