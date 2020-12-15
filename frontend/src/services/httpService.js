@@ -7,6 +7,14 @@ export function getLocations() {
 	//return content;
 }
 
+export function addLocation(url) {
+	return fetch(`${apiUrl}/locations?act=add&${url}`, options);
+}
+
+export function deleteLocation(id) {
+	return fetch(`${apiUrl}/locations?act=delete&id=${id}`, options);
+}
+
 export function getProducts() {
 	return fetch(`${apiUrl}/products?act=getall`, options);
 	//return content;

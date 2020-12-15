@@ -20,13 +20,13 @@ app.use(cors({origin: '*'}));
 db.serialize(function(){
   // create a fresh version of the locations table
   db.run("DROP TABLE IF EXISTS Locations");
-  db.run("CREATE TABLE Locations (latitude REAL, longitude REAL, description TEXT)");
+  db.run("CREATE TABLE Locations (id INTEGER, latitude REAL, longitude REAL, description TEXT, subtitle TEXT)");
 
   // insert initial records into locations table
-  var stmt = db.prepare("INSERT INTO Locations VALUES (?,?,?)");
-  stmt.run("43.254406", "-79.867308", "Green Gross Main Center");
-  stmt.run("43.257992", "-79.869754", "Nations Fresh Food");
-  stmt.run("43.234586", "-79.877792", "Walmart Supercentre");
+  var stmt = db.prepare("INSERT INTO Locations VALUES (?,?,?,?,?)");
+  stmt.run("1", "43.254406", "-79.867308", "Green Gross Main Center", "Main Branch");
+  stmt.run("2", "43.257992", "-79.869754", "Nations Fresh Food", "Healty Food");
+  stmt.run("3", "43.234586", "-79.877792", "Walmart Supercentre", "Supermarket");
   stmt.finalize();
 
    // create a fresh version of the locations table
@@ -55,7 +55,7 @@ app.get("/api/locations", function(req,res) {
 	
 	// return all of the animals in the inventory as a JSON array
 	if (req.query.act == "getall") {
-  	  db.all("SELECT latitude, longitude, description FROM Locations",
+  	  db.all("SELECT id, latitude, longitude, description, subtitle FROM Locations",
 		function(err, results) {
 			if (err) {
 				// console log error, return JSON error message
@@ -71,6 +71,44 @@ app.get("/api/locations", function(req,res) {
 			}
 		});
 	}
+
+	else if (req.query.act == "add") {
+		db.run("INSERT INTO Locations(id,latitude,longitude,description,subtitle) VALUES (?,?,?,?,?)", 
+			[req.query.id, 
+			req.query.latitude,
+			req.query.longitude, 
+			req.query.description,
+			req.query.subtitle],
+			function(err, results) {
+				if (err) {
+					// console log error, return JSON error message
+					console.log(err);
+					res.json({"error" : "Could not insert location"});
+				}
+				else {
+					console.log(results);
+					res.json({"status" : "Add location successful"});
+				}
+				
+			});
+	}
+
+	else if (req.query.act == "delete") {
+		db.run("DELETE FROM Locations WHERE id=?", 
+			[req.query.id],
+			function(err, results) {
+				if (err) {
+					// console log error, return JSON error message
+					console.log(err);
+					res.json({"error" : "Could not delete location"});
+				}
+				else {
+					console.log(results);
+					res.json({"status" : "Delete location successful"});
+				}
+			});
+	}
+
 	// if no act is found
 	else {
 	  res.json({'error': 'act not found'});	
