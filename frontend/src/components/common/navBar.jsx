@@ -21,7 +21,7 @@ function NavBar(props) {
 			<div className="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul className="navbar-nav mr-auto">
 				<li className="nav-item text-light">
-					<NavLink className='nav-item nav-link text-light' to="/home">Home</NavLink>
+					<a className='nav-item nav-link text-light' href="/home">Home</a>
 				</li>
 				{userData.username ? null : <li className="nav-item">
 						<NavLink className='nav-item nav-link text-light' to="/register">Register</NavLink>

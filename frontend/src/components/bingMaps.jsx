@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { getLocations } from '../services/httpService';
 import { geocodeQuery, getDistance, calculateDirection } from '../services/bingMapsService';
-import UserContext from './../context/userContext';
+//import UserContext from './../context/userContext';
 
 let map;
 let directionsManager;
@@ -10,7 +10,7 @@ let searchManager;
 function BingMaps(props) {
   const [locations, setLocations] = useState([]);
   const [userLocation, setUserLocation] = useState();
-  const {userData, setUserData} = useContext(UserContext);
+  //const {userData, setUserData} = useContext(UserContext);
   const address = useRef();
 
   const apiKey = "Aj6-7A0g8ZfYerfMQLQVFt3DvU--RyMpDC8u1g2KV_CFP4plypNxDSWei9wbEpbK";
@@ -27,6 +27,18 @@ function BingMaps(props) {
             title: loc.description,
             subTitle: loc.subtitle,
             text: loc.id
+        });
+
+        const infobox = new window.Microsoft.Maps.Infobox(coords, {
+          title: loc.description,
+          description: loc.address,
+          visible: false
+        });
+
+        infobox.setMap(map);
+
+        window.Microsoft.Maps.Events.addHandler(pin, 'click', function() {
+          infobox.setOptions({ visible: true });
         });
   
         //Add the pushpin to the map
@@ -53,10 +65,10 @@ function BingMaps(props) {
     let loadMap = setInterval(async () => {
       if (window.Microsoft) {
         window.clearInterval(loadMap);
-  
+
         let center;
         if (userLocation)
-          center = new window.Microsoft.Maps.Location(userData.pushpin.latitude, userData.pushpin.longitude);
+          center = new window.Microsoft.Maps.Location(userLocation.latitude, userLocation.longitude);
         else
           center = new window.Microsoft.Maps.Location(43.254406, -79.867308);
         
@@ -66,7 +78,7 @@ function BingMaps(props) {
           mapTypeId: window.Microsoft.Maps.MapTypeId.aerial,
               zoom: 15
         });
-  
+
         await window.Microsoft.Maps.loadModule('Microsoft.Maps.Search', function() {
           searchManager = new window.Microsoft.Maps.Search.SearchManager(map);
         });
@@ -77,7 +89,6 @@ function BingMaps(props) {
         pushPins();
       }
     }, 1000);
-
   }
 
   const getNearestLocation = (myPushPin) => {
