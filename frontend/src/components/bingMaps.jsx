@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getLocations } from '../services/httpService';
 import { geocodeQuery, getDistance, calculateDirection } from '../services/bingMapsService';
-//import UserContext from './../context/userContext';
+import { toast } from 'react-toastify';
 
 let map;
 let directionsManager;
@@ -10,7 +10,6 @@ let searchManager;
 function BingMaps(props) {
   const [locations, setLocations] = useState([]);
   const [userLocation, setUserLocation] = useState();
-  //const {userData, setUserData} = useContext(UserContext);
   const address = useRef();
 
   const apiKey = "Aj6-7A0g8ZfYerfMQLQVFt3DvU--RyMpDC8u1g2KV_CFP4plypNxDSWei9wbEpbK";
@@ -32,7 +31,17 @@ function BingMaps(props) {
         const infobox = new window.Microsoft.Maps.Infobox(coords, {
           title: loc.description,
           description: loc.address,
-          visible: false
+          visible: false,
+          maxHeight: 300,
+          maxWidth: 300,
+          actions: [
+            { label: 'Direction', eventHandler: function () {
+                if (userLocation)
+                  calculateDirection(directionsManager, userLocation, loc);
+                else
+                  toast.error("Enter your address first!");
+              }
+            }]
         });
 
         infobox.setMap(map);
