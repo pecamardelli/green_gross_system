@@ -9,8 +9,10 @@ let searchManager;
 
 function BingMaps(props) {
   const [locations, setLocations] = useState([]);
+  const [userLocation, setUserLocation] = useState();
   const {userData, setUserData} = useContext(UserContext);
   const address = useRef();
+
   const apiKey = "Aj6-7A0g8ZfYerfMQLQVFt3DvU--RyMpDC8u1g2KV_CFP4plypNxDSWei9wbEpbK";
   const mainAddress = "2 King St W, Hamilton, ON. Postal Code: L8P 1A1";
 
@@ -32,8 +34,8 @@ function BingMaps(props) {
       }
 
       // Now, add the user location to the map, if it is defined
-      if (userData.pushpin) {
-        const userPin = userData.pushpin;
+      if (userLocation) {
+        const userPin = userLocation;
         const coords = await new window.Microsoft.Maps.Location(userPin.latitude, userPin.longitude);
         const pin = new window.Microsoft.Maps.Pushpin(coords, {
             title: userPin.description,
@@ -43,9 +45,6 @@ function BingMaps(props) {
   
         //Add the pushpin to the map
         map.entities.push(pin);
-
-        const nearest = locations.filter(l => l.nearest);
-        if (nearest[0]) calculateDirection(directionsManager, userData.pushpin, nearest[0]);
       }
     }
   };
@@ -56,7 +55,7 @@ function BingMaps(props) {
         window.clearInterval(loadMap);
   
         let center;
-        if (userData.pushpin)
+        if (userLocation)
           center = new window.Microsoft.Maps.Location(userData.pushpin.latitude, userData.pushpin.longitude);
         else
           center = new window.Microsoft.Maps.Location(43.254406, -79.867308);
@@ -81,8 +80,8 @@ function BingMaps(props) {
 
   }
 
-  const getNearestLocation = (pushpin) => {
-    getDistance(apiKey, pushpin, locations);
+  const getNearestLocation = (myPushPin) => {
+    getDistance(apiKey, myPushPin, locations);
 
     let calculateDistances = setInterval(() => {
       if (window.locationsWithDistance) {
@@ -98,12 +97,15 @@ function BingMaps(props) {
           return loc;
         });
         
-        const _userData = { ...userData, pushpin };
+        /*
+        const _userData = { ...userData };
+        _userData.pushpin = { ...pushpin };
         localStorage.setItem('userData', JSON.stringify(_userData));
         setUserData(_userData);
-
+        */
         setLocations(newArray);
         pushPins();
+        calculateDirection(directionsManager, myPushPin, nearest);
       }
     }, 1000);
   };
@@ -126,6 +128,7 @@ function BingMaps(props) {
           address: address.current.value
         };
         
+        setUserLocation(myPushPin);
         getNearestLocation(myPushPin);
       }
     }, 1000);
@@ -160,7 +163,7 @@ function BingMaps(props) {
                     <h4>
                       <strong>Your address:</strong>
                     </h4>
-                    <h5>{userData.pushpin.address}</h5>
+                    <h5>{userLocation.address}</h5>
                     <h5>
                       <strong>The nearest pickup location to you is:</strong>
                     </h5>
