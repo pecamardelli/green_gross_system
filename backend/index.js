@@ -28,7 +28,13 @@ db.serialize(function(){
   stmt.run("2", "43.257992", "-79.869754", "Nations Fresh Food", "Healty Food", "2 King St W #445, Hamilton, ON Postal Code: L8P 1A2");
   stmt.run("3", "43.234586", "-79.877792", "Walmart Supercentre", "Supermarket", "675 Upper James St, Hamilton, ON Postal Code: L9C 2Z5");
   stmt.run("4", "43.251538", "-79,852623", "Giorgio's NoFrills", "Tasty Meals", "435 Main St E, Hamilton, ON Postal Code: L8N 1K1");
-  stmt.run("4", "43.253736", "-79.860992", "Green Foods", "Restaurant", "284 King St E, Hamilton, Ontario L8N 1B7, Canada");
+  stmt.run("5", "43.253736", "-79.860992", "Green Foods", "Restaurant", "284 King St E, Hamilton, Ontario L8N 1B7, Canada");
+  
+  stmt.run("6", "43.22494300365392", "-79.76787899972841", "St. David Elementary School", "Elementary School", "33 Cromwell Crescent, Hamilton, Ontario L8N 1B7, Canada");
+  stmt.run("7", "43.21433470693851", "-79.71531332764901", "St. Clare of Assisi Elementary School", "Elementary School", "185 Glenashton Drive, Hamilton, Ontario L8N 1B7, Canada");
+  stmt.run("8", "43.20398125067917", "-79.87860549686357", "St. Marguerite D'Youville Elementary School", "Elementary School", "20 Bonaparte Way, Hamilton, Ontario L8N 1B7, Canada");
+  stmt.run("9", "43.25103110427302", "-79.8692765621014", "St. Charles Adult Education", "Adult Learning", "45 Young Street, Hamilton, Ontario L8N 1B7, Canada");
+  stmt.run("10", "43.226198186161064", "-79.71276406964192", "Mohawk College - Stoney Creek Campus", "Post Secondary", "481 Barton Street, Hamilton, Ontario L8N 1B7, Canada");
   stmt.finalize();
   
    // create a fresh version of the locations table

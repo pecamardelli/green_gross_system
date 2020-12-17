@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getLocations } from '../services/httpService';
-import { geocodeQuery, getDistance, calculateDirection } from '../services/bingMapsService';
+import { calculateDirection } from '../services/bingMapsService';
 import { toast } from 'react-toastify';
 
 let map;
@@ -15,13 +15,13 @@ function BingMaps(props) {
   const apiKey = "Aj6-7A0g8ZfYerfMQLQVFt3DvU--RyMpDC8u1g2KV_CFP4plypNxDSWei9wbEpbK";
   const mainAddress = "2 King St W, Hamilton, ON. Postal Code: L8P 1A1";
 
-  const pushPins = async () => {
+  const pushPins = () => {
     if (map) {
       map.entities.clear();
   
       for (let loc of locations) {
         //Create custom Pushpins
-        const coords = await new window.Microsoft.Maps.Location(loc.latitude, loc.longitude);
+        const coords = new window.Microsoft.Maps.Location(loc.latitude, loc.longitude);
         const pin = new window.Microsoft.Maps.Pushpin(coords, {
             title: loc.description,
             subTitle: loc.subtitle,
@@ -36,8 +36,10 @@ function BingMaps(props) {
           maxWidth: 300,
           actions: [
             { label: 'Direction', eventHandler: function () {
-                if (userLocation)
+                if (userLocation) {
+                  infobox.setOptions({ visible: false });
                   calculateDirection(directionsManager, userLocation, loc);
+                }
                 else
                   toast.error("Enter your address first!");
               }
@@ -57,7 +59,7 @@ function BingMaps(props) {
       // Now, add the user location to the map, if it is defined
       if (userLocation) {
         const userPin = userLocation;
-        const coords = await new window.Microsoft.Maps.Location(userPin.latitude, userPin.longitude);
+        const coords = new window.Microsoft.Maps.Location(userPin.latitude, userPin.longitude);
         const pin = new window.Microsoft.Maps.Pushpin(coords, {
             title: userPin.description,
             subTitle: userPin.subtitle,
@@ -71,7 +73,7 @@ function BingMaps(props) {
   };
   
   if (!map) {
-    let loadMap = setInterval(async () => {
+    let loadMap = setInterval(() => {
       if (window.Microsoft) {
         window.clearInterval(loadMap);
 
@@ -81,17 +83,18 @@ function BingMaps(props) {
         else
           center = new window.Microsoft.Maps.Location(43.254406, -79.867308);
         
-        map = await new window.Microsoft.Maps.Map('#myMap', {
+        map = new window.Microsoft.Maps.Map('#myMap', {
           credentials: apiKey,
           center: center,
           mapTypeId: window.Microsoft.Maps.MapTypeId.aerial,
               zoom: 15
         });
 
-        await window.Microsoft.Maps.loadModule('Microsoft.Maps.Search', function() {
+        window.Microsoft.Maps.loadModule('Microsoft.Maps.Search', function() {
           searchManager = new window.Microsoft.Maps.Search.SearchManager(map);
         });
-        await window.Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function() {
+
+        window.Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function() {
           directionsManager = new window.Microsoft.Maps.Directions.DirectionsManager(map);
         });
 
@@ -100,58 +103,90 @@ function BingMaps(props) {
     }, 1000);
   }
 
-  const getNearestLocation = (myPushPin) => {
-    getDistance(apiKey, myPushPin, locations);
+  const getNearestLocation = (myLocation) => {
+    const requestUrl = 'https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix?key=' + apiKey;
 
-    let calculateDistances = setInterval(() => {
-      if (window.locationsWithDistance) {
-        window.clearInterval(calculateDistances);
+    const origins = [{
+       latitude: myLocation.latitude,
+       longitude: myLocation.longitude 
+    }];
 
-        const nearest = window.locationsWithDistance.reduce(function(res, loc) {
-          return (loc.travelDistance < res.travelDistance) ? loc : res;
-        });
+    const destinations = locations
+        .map(l => ({ latitude: l.latitude, longitude: l.longitude }));
+ 
+    const requestBody = {
+        "origins": origins,
+        "destinations": destinations,
+        "travelMode": "driving"
+    };
 
-        const newArray = window.locationsWithDistance.map(loc => {
-          if (loc.travelDistance === nearest.travelDistance) loc.nearest = true;
-          else loc.nearest = false;
-          return loc;
-        });
-        
-        /*
-        const _userData = { ...userData };
-        _userData.pushpin = { ...pushpin };
-        localStorage.setItem('userData', JSON.stringify(_userData));
-        setUserData(_userData);
-        */
-        setLocations(newArray);
-        pushPins();
-        calculateDirection(directionsManager, myPushPin, nearest);
-      }
-    }, 1000);
+    const http = new XMLHttpRequest();
+    http.open("POST", requestUrl, true);
+
+    //Send the content type in the header information along with the request.
+    http.setRequestHeader("Content-type", "application/json");
+
+    http.onreadystatechange = function () {
+        if (http.readyState == 4 && http.status == 200) {
+            //Request was successful, do something with it.
+            const result = JSON.parse(http.responseText);
+            const locationsWithDistance = locations.map((loc, index) => {
+                loc.travelDistance = result.resourceSets[0].resources[0].results[index].travelDistance;
+                loc.travelDuration = result.resourceSets[0].resources[0].results[index].travelDuration;
+                return loc;
+            });
+
+            const nearest = locationsWithDistance.reduce(function(res, loc) {
+              return (loc.travelDistance < res.travelDistance) ? loc : res;
+            });
+    
+            const newArray = locationsWithDistance.map(loc => {
+              if (loc.travelDistance === nearest.travelDistance) loc.nearest = true;
+              else loc.nearest = false;
+              return loc;
+            });
+            
+            setLocations(newArray);
+            pushPins();
+            calculateDirection(directionsManager, myLocation, nearest);
+        }
+    }
+
+    //Convert the JSON request body into a string and pass it into the request.
+    http.send(JSON.stringify(requestBody));
   };
 
-  const setAddress = async () => {
+  const setAddress = () => {
     if (!address.current.value) return;
-    geocodeQuery(address.current.value, searchManager);
-    
-    let getNewLocation = setInterval(async function() {
-      if (window.newLocation) {
-        window.clearInterval(getNewLocation);
-
-        const loc = window.newLocation;
-        const myPushPin = {
-          id: Math.round(Math.random() * 1000),
-          latitude: loc.latitude,
-          longitude: loc.longitude,
-          description: "You are here",
-          subtitle: "My location",
-          address: address.current.value
-        };
-        
-        setUserLocation(myPushPin);
-        getNearestLocation(myPushPin);
+    const searchRequest = {
+      where: address.current.value,
+      callback: function (r) {
+        //Add the first result to the map and zoom into it.
+        if (r && r.results && r.results.length > 0) {
+          const loc = r.results[0].location;
+          const myPushPin = {
+            id: Math.round(Math.random() * 1000),
+            latitude: loc.latitude,
+            longitude: loc.longitude,
+            description: "You are here",
+            subtitle: "My location",
+            address: address.current.value
+          };
+          
+          setUserLocation(myPushPin);
+          localStorage.setItem('userLocation', JSON.stringify(myPushPin));
+          getNearestLocation(myPushPin);
+            //window.newLocation = r.results[0].location;
+        }
+      },
+      errorCallback: function (e) {
+          //If there is an error, alert the user about it.
+          alert("No results found.");
       }
-    }, 1000);
+    };
+
+    //Make the geocode request.
+    searchManager.geocode(searchRequest);
   };
 
   useEffect(() => {
@@ -159,9 +194,12 @@ function BingMaps(props) {
       const response = await getLocations();
       const locs = await response.json();
       setLocations(locs);
+
+      const jsonData = localStorage.getItem('userLocation');
+      setUserLocation(await JSON.parse(jsonData))
     }
     call();
-  }, [setLocations]);
+  }, [setLocations, setUserLocation]);
 
   return (
     <div className="card-transparent bing-maps text-white">
@@ -177,13 +215,14 @@ function BingMaps(props) {
             >Set</button>
           </div>
             <hr />
+            <div>
+              <h4>
+                <strong>Your address:</strong>
+              </h4>
+              <h5>{userLocation?.address}</h5>
             { locations.map(loc => {
               if (loc.nearest) {
-                return (<div key={loc.id}>
-                    <h4>
-                      <strong>Your address:</strong>
-                    </h4>
-                    <h5>{userLocation.address}</h5>
+                return (<div>
                     <h5>
                       <strong>The nearest pickup location to you is:</strong>
                     </h5>
@@ -195,6 +234,7 @@ function BingMaps(props) {
               }
               return null;
             })}
+            </div>
         </div>
       </div>
     </div>

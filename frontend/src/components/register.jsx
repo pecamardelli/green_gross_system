@@ -18,7 +18,7 @@ export default function Register(props) {
 
         userContext.setUserData(userFormData);
         localStorage.setItem('userData', JSON.stringify(userFormData));
-        props.history.push('/home');
+        props.history.push('/about-us');
     }
 
     const handleChange = (e) => {

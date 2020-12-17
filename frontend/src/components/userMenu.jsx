@@ -5,10 +5,11 @@ import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 
 function UserMenu(props) {
-    const {userData, setUserData} = useContext(UserContext);
+    const {userData, setUserData } = useContext(UserContext);
 
     const handleLogout = () => {
         localStorage.removeItem('userData');
+        localStorage.removeItem('userLocation');
         setUserData({});
         toast.success("User logged out.");
     };
