@@ -1,8 +1,6 @@
 
-export async function geocodeQuery(query, map) {
-    if (!map) return console.log("Map is null.");
-
-    const searchManager = await new window.Microsoft.Maps.Search.SearchManager(map);
+export async function geocodeQuery(query, searchManager) {
+    if (!searchManager) return console.log("No search manager provided.");
 
     const searchRequest = {
         where: query,
@@ -84,3 +82,39 @@ export function getDistance(apiKey, myLocation, locations) {
     //Convert the JSON request body into a string and pass it into the request.
     http.send(JSON.stringify(requestBody));
 }
+
+export async function calculateDirection(directionsManager, address1, address2) {
+    //Load the directions module.
+    //Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function () {
+        //Create an instance of the directions manager.
+        //const directionsManager = await new window.Microsoft.Maps.Directions.DirectionsManager(map);
+        directionsManager.clearAll();
+        directionsManager.clearDisplay();
+
+        //directionsManager.removeWaypoint(0);
+        //directionsManager.removeWaypoint(1);
+        
+        
+        //Create waypoints to route between.
+        //const seattleWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: address1 });
+        //directionsManager.addWaypoint(seattleWaypoint);
+
+        const myLocation = new window.Microsoft.Maps.Directions.Waypoint({
+            address: address1.subtitle,
+            location: new window.Microsoft.Maps.Location(address1.latitude, address1.longitude)
+        });
+        directionsManager.addWaypoint(myLocation);
+
+        const destination = new window.Microsoft.Maps.Directions.Waypoint({
+            address: address2.subtitle,
+            location: new window.Microsoft.Maps.Location(address2.latitude, address2.longitude)
+        });
+        directionsManager.addWaypoint(destination);
+
+        //Specify the element in which the itinerary will be rendered.
+        //directionsManager.setRenderOptions({ itineraryContainer: '#directionsItinerary' });
+
+        //Calculate directions.
+        directionsManager.calculateDirections();
+    //});
+} 
