@@ -10,8 +10,10 @@ function UserMenu(props) {
     const handleLogout = () => {
         localStorage.removeItem('userData');
         localStorage.removeItem('userLocation');
+        localStorage.removeItem('nearestLocation');
         setUserData({});
         toast.success("User logged out.");
+        window.location = '/home';
     };
 
     const getItemCount = () => {
@@ -27,9 +29,9 @@ function UserMenu(props) {
             <div>Hello, {userData.username}!</div>
             &nbsp;
             <div>
-                <Link to='/wishlist'>
+                <a href='/wishlist'>
                     {getCartIcon('1.4em')}
-                </Link>
+                </a>
             </div>
             &nbsp;
             <div className="badge badge-success badge-pill">

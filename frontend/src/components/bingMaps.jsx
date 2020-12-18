@@ -6,16 +6,60 @@ import { toast } from 'react-toastify';
 let map;
 let directionsManager;
 let searchManager;
+let pushPins;
+
+let apiKey = "Aj6-7A0g8ZfYerfMQLQVFt3DvU--RyMpDC8u1g2KV_CFP4plypNxDSWei9wbEpbK";
+
+if (!map) {
+  let loadMap = setInterval(async () => {
+    if (window.Microsoft) {
+      window.clearInterval(loadMap);
+
+      const jsonData = localStorage.getItem('userLocation');
+      const userLocation = await JSON.parse(jsonData);
+
+      let center;
+      if (userLocation)
+        center = new window.Microsoft.Maps.Location(userLocation.latitude, userLocation.longitude);
+      else
+        center = new window.Microsoft.Maps.Location(43.254406, -79.867308);
+      
+      map = new window.Microsoft.Maps.Map('#myMap', {
+        credentials: apiKey,
+        center: center,
+        mapTypeId: window.Microsoft.Maps.MapTypeId.aerial,
+            zoom: 15
+      });
+
+      window.Microsoft.Maps.loadModule('Microsoft.Maps.Search', function() {
+        searchManager = new window.Microsoft.Maps.Search.SearchManager(map);
+      });
+
+      window.Microsoft.Maps.loadModule('Microsoft.Maps.Directions', async function() {
+        directionsManager = new window.Microsoft.Maps.Directions.DirectionsManager(map);
+
+        const jsonNearest = localStorage.getItem('nearestLocation');
+        const nearestLoc = await JSON.parse(jsonNearest);
+    
+        if (nearestLoc && directionsManager)
+          calculateDirection(directionsManager, userLocation, nearestLoc);
+
+      });
+
+      pushPins();
+    }
+  }, 1000);
+}
 
 function BingMaps(props) {
   const [locations, setLocations] = useState([]);
   const [userLocation, setUserLocation] = useState();
+  const [nearestLocation, setNearestLocation] = useState();
   const address = useRef();
 
-  const apiKey = "Aj6-7A0g8ZfYerfMQLQVFt3DvU--RyMpDC8u1g2KV_CFP4plypNxDSWei9wbEpbK";
   const mainAddress = "2 King St W, Hamilton, ON. Postal Code: L8P 1A1";
 
-  const pushPins = () => {
+  pushPins = () => {
     if (map) {
       map.entities.clear();
   
@@ -36,9 +80,11 @@ function BingMaps(props) {
           maxWidth: 300,
           actions: [
             { label: 'Direction', eventHandler: function () {
-                if (userLocation) {
+              const jsonData = localStorage.getItem('userLocation');
+              const userLoc = JSON.parse(jsonData);
+                if (userLoc) {
                   infobox.setOptions({ visible: false });
-                  calculateDirection(directionsManager, userLocation, loc);
+                  calculateDirection(directionsManager, userLoc, loc);
                 }
                 else
                   toast.error("Enter your address first!");
@@ -71,37 +117,6 @@ function BingMaps(props) {
       }
     }
   };
-  
-  if (!map) {
-    let loadMap = setInterval(() => {
-      if (window.Microsoft) {
-        window.clearInterval(loadMap);
-
-        let center;
-        if (userLocation)
-          center = new window.Microsoft.Maps.Location(userLocation.latitude, userLocation.longitude);
-        else
-          center = new window.Microsoft.Maps.Location(43.254406, -79.867308);
-        
-        map = new window.Microsoft.Maps.Map('#myMap', {
-          credentials: apiKey,
-          center: center,
-          mapTypeId: window.Microsoft.Maps.MapTypeId.aerial,
-              zoom: 15
-        });
-
-        window.Microsoft.Maps.loadModule('Microsoft.Maps.Search', function() {
-          searchManager = new window.Microsoft.Maps.Search.SearchManager(map);
-        });
-
-        window.Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function() {
-          directionsManager = new window.Microsoft.Maps.Directions.DirectionsManager(map);
-        });
-
-        pushPins();
-      }
-    }, 1000);
-  }
 
   const getNearestLocation = (myLocation) => {
     const requestUrl = 'https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix?key=' + apiKey;
@@ -140,6 +155,9 @@ function BingMaps(props) {
               return (loc.travelDistance < res.travelDistance) ? loc : res;
             });
     
+            localStorage.setItem('nearestLocation', JSON.stringify(nearest));
+            setNearestLocation(nearest);
+            
             const newArray = locationsWithDistance.map(loc => {
               if (loc.travelDistance === nearest.travelDistance) loc.nearest = true;
               else loc.nearest = false;
@@ -176,7 +194,6 @@ function BingMaps(props) {
           setUserLocation(myPushPin);
           localStorage.setItem('userLocation', JSON.stringify(myPushPin));
           getNearestLocation(myPushPin);
-            //window.newLocation = r.results[0].location;
         }
       },
       errorCallback: function (e) {
@@ -195,11 +212,16 @@ function BingMaps(props) {
       const locs = await response.json();
       setLocations(locs);
 
+      const jsonNearest = localStorage.getItem('nearestLocation');
+      const nearestLoc = await JSON.parse(jsonNearest);
+      setNearestLocation(nearestLoc);
+
       const jsonData = localStorage.getItem('userLocation');
-      setUserLocation(await JSON.parse(jsonData))
+      const userLoc = await JSON.parse(jsonData);
+      setUserLocation(userLoc);
     }
     call();
-  }, [setLocations, setUserLocation]);
+  }, [setLocations, setUserLocation, setNearestLocation]);
 
   return (
     <div className="card-transparent bing-maps text-white">
@@ -220,20 +242,17 @@ function BingMaps(props) {
                 <strong>Your address:</strong>
               </h4>
               <h5>{userLocation?.address}</h5>
-            { locations.map(loc => {
-              if (loc.nearest) {
-                return (<div>
+              { nearestLocation ? <div>
                     <h5>
                       <strong>The nearest pickup location to you is:</strong>
                     </h5>
-                    <h5>{loc.description}</h5>
-                    <small>{loc.address}</small>
+                    <h5>{nearestLocation.description}</h5>
+                    <small>{nearestLocation.address}</small>
                     <br />
-                    <small>Distance {loc.travelDistance} km</small>
-                  </div>);
+                    <small>Distance {nearestLocation.travelDistance} km</small>
+                  </div>
+              : null
               }
-              return null;
-            })}
             </div>
         </div>
       </div>

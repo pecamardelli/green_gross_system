@@ -3,6 +3,7 @@ import UserContext from './../context/userContext';
 import noImage from '../assets/images/not_found.png';
 import { getTrashIcon, getBuyedIcon } from '../assets/icons';
 import { toast } from 'react-toastify';
+import BingMaps from './bingMaps';
 
 function WishList(props) {
     const {userData, setUserData} = useContext(UserContext);
@@ -38,7 +39,7 @@ function WishList(props) {
         setUserData(tempUserData);
     };
 
-    return (
+    return (<>
         <div className="card-transparent wish-list">
             <div className="card-body">
                 <div className="card-title h-40 text-white">
@@ -115,7 +116,8 @@ function WishList(props) {
                 </table>
             </div>
         </div>
-    );
+        <BingMaps />
+    </>);
 }
 
 export default WishList;
